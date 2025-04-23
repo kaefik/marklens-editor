@@ -14,27 +14,28 @@ def main(stdscr):
     # screen.addstr( 0, 10, "(0, 0)")
     # screen.addch(5, 5, "!")
 
-    x=0
-    y=0
+    col=0
+    row=0
     while True:
         key = screen.getch()
         if key == curses.KEY_UP:
-            y -= 1
+            row -= 1
         elif key == curses.KEY_DOWN:
-            y += 1
+            row += 1
         elif key == curses.KEY_LEFT:
-            x -= 1
+            col -= 1
         elif key == curses.KEY_RIGHT:
-            x += 1
-        elif key == curses.KEY_ENTER:
-            y+=1
-            x=0
+            col += 1
+        elif key in [10, 13, curses.KEY_ENTER]:  # Enter может быть 10, 13 или KEY_ENTER
+            row += 1
+            col = 0        
         elif key == 17:
             break
         else:
-            screen.addch(y, x, chr(key))
-            x+=1
-            
+            screen.addch(row, col, chr(key))
+            col += 1
+
+        screen.move(row, col)  # Устанавливаем курсор в текущую позицию
         screen.refresh()
             
     
