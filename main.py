@@ -14,6 +14,18 @@ def main(stdscr):
     # screen.addstr( 0, 10, "(0, 0)")
     # screen.addch(5, 5, "!")
 
+    # Инициализация цветов
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLUE)  # (id, текст, фон)
+    
+    # Заливаем весь экран синим с белым текстом
+    stdscr.bkgd(' ', curses.color_pair(1))  # ' ' - заполнитель фона
+    stdscr.clear()  # Очистка с применением фона
+    
+
+    rows, cols = stdscr.getmaxyx()
+    print(f"{rows=}, {cols=}")
+
     col=0
     row=0
     while True:
