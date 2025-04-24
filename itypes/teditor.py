@@ -1,19 +1,75 @@
 from pydantic import BaseModel, Field
-import curses
 from typing import Optional
 from .tcolor import TColor
+from .tbuffer import TBuffer
+import curses
+from curses import wrapper
+
 
 class TEditor(BaseModel):
-    cols: int = Field(..., gt=0)
-    rows: int = Field(..., gt=0)
+    cols: int = Field(..., ge=0)
+    rows: int = Field(..., ge=0)
     color: TColor
     screen: Optional[curses.window] = None
+    buffer: TBuffer
+    row: int = Field(..., ge=0)
+    col: int = Field(..., ge=0)
 
-    def __init__(self, cols: int, rows: int, color: TColor):
-        super().__init__(cols=cols, rows=rows, color=color)
+    class Config:
+        arbitrary_types_allowed = True  # Разрешаем любые типы
+
+    def __init__(self, cols: int, rows: int, color: TColor, buffer: TBuffer, row: int = 0, col: int =0):
+        super().__init__(cols=cols, rows=rows, color=color, buffer=buffer, row=row, col=col)
+        self.row = row
+        self.col = col
         self.screen = curses.initscr()
         self.rows, self.cols = self.screen.getmaxyx()
-        self.screen.bkgd(' ', curses.color_pair(1))
-        self.screen.clear()
 
+
+    def init_colors(self, id: int = 1):
+        curses.start_color()
+        curses.init_pair(id, self.color.text, self.color.bg)  # (id, текст, фон)
+        
+        # Заливаем весь экран синим с белым текстом
+        self.screen.bkgd(' ', curses.color_pair(id))  # ' ' - заполнитель фона
+        self.screen.clear()  # Очистка с применением фона
+
+    def set_color(self, bg:int = Field(..., ge=0, le=255), text:int = Field(..., ge=0, le=255)):
+        self.color.bg = bg
+        self.color.text = text
+
+    def run(self):
+
+        self.init_colors()
+    
+        while True:
+            # self.screen.addstr(0, 0, self.buffer.buffer)
+            # self.screen.addstr(0, self.buffer.cursor, self.buffer.buffer[self.buffer.cursor], curses.color_pair(1))
+            self.screen.refresh()
+            
+
+            key = self.screen.getch()
+            if key == curses.KEY_UP:
+                self.row -= 1
+            elif key == curses.KEY_DOWN:
+                self.row += 1
+            elif key == curses.KEY_LEFT:
+                self.col -= 1
+            elif key == curses.KEY_RIGHT:
+                self.col += 1
+            elif key in [10, 13, curses.KEY_ENTER]:  # Enter может быть 10, 13 или KEY_ENTER
+                self.row += 1
+                self.col = 0        
+            elif key == 17:
+                break
+            else:
+                self.screen.addch(self.row, self.col, chr(key))
+                self.col += 1
+
+            self.screen.move(self.row, self.col)  # Устанавливаем курсор в текущую позицию
+            self.screen.refresh()
+        
+        #  curses.endwin()
+
+            
 
