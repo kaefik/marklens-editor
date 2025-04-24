@@ -49,7 +49,6 @@ class TEditor(BaseModel):
             
           
             key = self.screen.getch()
-            print(f"{key=}")
             if key == curses.KEY_UP:
                 self.row -= 1
             elif key == curses.KEY_DOWN:
@@ -58,15 +57,29 @@ class TEditor(BaseModel):
                 self.col -= 1
             elif key == curses.KEY_RIGHT:
                 self.col += 1
-                print(f"{self.col=} {self.row=}")
+                
             elif key in [10, 13, curses.KEY_ENTER]:  # Enter может быть 10, 13 или KEY_ENTER
                 self.row += 1
                 self.col = 0        
-            elif key == 17:
+            elif key == 17: # Ctrl+Q
                 break
             else:
                 self.screen.addch(self.row, self.col, chr(key))
                 self.col += 1
+
+            if self.col >= self.cols:
+                self.col = 0
+                self.row += 1
+            
+            if self.col < 0:
+                self.col = 0
+                self.row -= 1
+            
+            if self.row >= self.rows:
+                self.row = self.rows - 1
+
+            if self.row < 0:
+                self.row = 0   
 
             self.screen.move(self.row, self.col)  # Устанавливаем курсор в текущую позицию
             self.screen.refresh()
