@@ -9,9 +9,9 @@ def main():
     app_buffer = TBuffer([])
 
     color = TColor(curses.COLOR_WHITE,  curses.COLOR_BLUE)
-    editor = TEditor(500, 700, color, buffer=app_buffer)
+    editor = TEditor(30, 200, color, buffer=app_buffer)
 
-    editor.run()
+    editor.start()
 
 
 
