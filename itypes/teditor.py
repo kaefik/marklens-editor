@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from .tcolor import TColor
 from .tbuffer import TBuffer
@@ -15,8 +15,7 @@ class TEditor(BaseModel):
     row: int = Field(..., ge=0)
     col: int = Field(..., ge=0)
 
-    class Config:
-        arbitrary_types_allowed = True  # Разрешаем любые типы
+    model_config = ConfigDict(arbitrary_types_allowed=True)  # Разрешаем любые типы
 
     def __init__(self, cols: int, rows: int, color: TColor, buffer: TBuffer, row: int = 0, col: int =0):
         super().__init__(cols=cols, rows=rows, color=color, buffer=buffer, row=row, col=col)
