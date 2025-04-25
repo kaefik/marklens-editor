@@ -38,6 +38,21 @@ class TEditor(BaseModel):
         self.color.bg = bg
         self.color.text = text
 
+    def check_cursor(self):
+        if self.col >= self.cols:
+                self.col = 0
+                self.row += 1
+            
+        if self.col < 0:
+            self.col = 0
+            self.row -= 1
+        
+        if self.row >= self.rows:
+            self.row = self.rows - 1
+
+        if self.row < 0:
+            self.row = 0   
+
     def run(self):
 
         self.init_colors()
@@ -49,6 +64,7 @@ class TEditor(BaseModel):
             
           
             key = self.screen.getch()
+            print(f"{key=}")
             if key == curses.KEY_UP:
                 self.row -= 1
             elif key == curses.KEY_DOWN:
@@ -57,6 +73,10 @@ class TEditor(BaseModel):
                 self.col -= 1
             elif key == curses.KEY_RIGHT:
                 self.col += 1
+            elif key == 8:
+                self.col -= 1                 
+                self.check_cursor()
+                self.screen.addch(self.row, self.col, ' ')
                 
             elif key in [10, 13, curses.KEY_ENTER]:  # Enter может быть 10, 13 или KEY_ENTER
                 self.row += 1
@@ -67,19 +87,8 @@ class TEditor(BaseModel):
                 self.screen.addch(self.row, self.col, chr(key))
                 self.col += 1
 
-            if self.col >= self.cols:
-                self.col = 0
-                self.row += 1
+            self.check_cursor()
             
-            if self.col < 0:
-                self.col = 0
-                self.row -= 1
-            
-            if self.row >= self.rows:
-                self.row = self.rows - 1
-
-            if self.row < 0:
-                self.row = 0   
 
             self.screen.move(self.row, self.col)  # Устанавливаем курсор в текущую позицию
             self.screen.refresh()
