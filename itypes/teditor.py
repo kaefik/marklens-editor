@@ -15,23 +15,44 @@ class TEditor(BaseModel):
     buffer: TBuffer
     row: int = Field(..., ge=0)
     col: int = Field(..., ge=0)
+    x: int = Field(..., ge=0)
+    y: int = Field(..., ge=0)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)  # Разрешаем любые типы
 
-    def __init__(self,  rows: int, cols: int, color: TColor, buffer: TBuffer, row: int = 0, col: int =0):
-        super().__init__(cols=cols, rows=rows, color=color, buffer=buffer, row=row, col=col)
+    def __init__(self,  rows: int, cols: int, color: TColor, buffer: TBuffer, row: int = 0, col: int =0, x: int = 0, y: int = 0):
+        """
+        rows: int - количество строк (высота окна)
+        cols: int - количество столбцов (ширина окна)
+        color: TColor - цвет (текст, фон)
+        buffer: TBuffer - буфер (строки)
+        row: int - строка (текущая строка)
+        col: int - столбец (текущий столбец)
+        x: int - координата x 
+        y: int - координата y 
+        """
+
+        super().__init__(cols=cols, rows=rows, color=color, buffer=buffer, row=row, col=col, x=x, y=y)
         self.row = row
         self.col = col
+        self.x = x
+        self.y = y
+
 
     def _main(self, stdscr):
         # Получаем размеры терминала
         max_y, max_x = stdscr.getmaxyx()
-        # Проверяем и корректируем размеры окна
-        self.rows = min(self.rows, max_y)
-        self.cols = min(self.cols, max_x)
         
-        self.screen = curses.newwin(self.rows, self.cols, 0, 0)
-        #self.screen.keypad(True)
+        # Проверяем и корректируем размеры окна
+        self.rows = min(self.rows, max_y - self.y)
+        self.cols = min(self.cols, max_x - self.x)
+        
+        # Проверяем, что окно не выходит за пределы экрана
+        if self.y + self.rows > max_y or self.x + self.cols > max_x:
+            raise ValueError("Window dimensions exceed terminal size")
+            
+        self.screen = curses.newwin(self.rows, self.cols, self.y, self.x)
+        self.screen.keypad(True)
         self.screen.clear()
         
         self.run()
