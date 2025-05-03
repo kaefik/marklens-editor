@@ -38,7 +38,9 @@ class TBuffer(BaseModel):
     def replace_line(self, row: int, line: str):
         self.buffer[row] = line
 
-    
+    def __getitem__(self, index: int) -> str:
+        """Получение строки из буфера по индексу."""
+        return self.buffer[index]    
 
 
 
