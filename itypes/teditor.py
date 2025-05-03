@@ -42,8 +42,8 @@ class TEditor(BaseModel):
 
         super().__init__(cols=cols, rows=rows, color=color, buffer=buffer, row=row, col=col, x =x, y = y, frame_right_row = frame_right_row, frame_right_col = frame_right_col, frame_left_row = frame_left_row, frame_left_col = frame_left_col )
 
-        frame_right_row = frame_left_row + rows
-        frame_right_col = frame_left_col + cols
+        self.frame_right_row = self.frame_left_row + self.rows
+        self.frame_right_col = self.frame_left_col + self.cols
         
         
 
