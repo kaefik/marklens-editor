@@ -42,7 +42,14 @@ class TBuffer(BaseModel):
         """Получение строки из буфера по индексу."""
         return self.buffer[index]    
 
+    def load_from_file(self, filename: str):
+        """ Загрузка из файла filename содержимое в буфер текста"""
+        with open(filename, "r") as f:
+                self.buffer = f.readlines()
 
+    def save_to_file(self, filename: str):
+        with open(filename, "w") as f:
+            f.writelines(self.buffer)
 
 
 
