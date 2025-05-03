@@ -17,10 +17,14 @@ class TEditor(BaseModel):
     col: int = Field(..., ge=0)
     x: int = Field(..., ge=0)
     y: int = Field(..., ge=0)
+    frame_right_row: int = Field(..., ge=0)
+    frame_right_col: int = Field(..., ge=0)
+    frame_left_row: int = Field(..., ge=0)
+    frame_left_col: int = Field(..., ge=0)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)  # Разрешаем любые типы
 
-    def __init__(self,  rows: int, cols: int, color: TColor, buffer: TBuffer, row: int = 0, col: int =0, x: int = 0, y: int = 0):
+    def __init__(self,  rows: int, cols: int, color: TColor, buffer: TBuffer, row: int = 0, col: int = 0,  x:int = 0, y:int = 0, frame_right_row: int = 0, frame_right_col: int = 0,  frame_left_row: int = 0, frame_left_col: int = 0 ):
         """
         rows: int - количество строк (высота окна)
         cols: int - количество столбцов (ширина окна)
@@ -28,16 +32,20 @@ class TEditor(BaseModel):
         buffer: TBuffer - буфер (строки)
         row: int - строка (текущая строка)
         col: int - столбец (текущий столбец)
-        x: int - координата x 
-        y: int - координата y 
+        x: int - координата верхнего левого угла окна редактора с которой будет выводиться само окно на экране - столбец
+        y: int - координата верхнего левого угла окна редактора с которой будет выводиться само окно на экране - строка
+        frame_left_row - левая (верхняя) координата фрейма (окна) который перемещается по буферу - номер  строки
+        frame_left_col - левая (верхняя) координата фрейма (окна) который перемещается по буферу - номер столбца
+        frame_right_row - правая (нижняя) координата фрейма (окна) который перемещается по буферу - номер  строки
+        frame_right_col - правая (нижняя) координата фрейма (окна) который перемещается по буферу - номер столбца
         """
 
-        super().__init__(cols=cols, rows=rows, color=color, buffer=buffer, row=row, col=col, x=x, y=y)
-        self.row = row
-        self.col = col
-        self.x = x
-        self.y = y
+        super().__init__(cols=cols, rows=rows, color=color, buffer=buffer, row=row, col=col, x =x, y = y, frame_right_row = frame_right_row, frame_right_col = frame_right_col, frame_left_row = frame_left_row, frame_left_col = frame_left_col )
 
+        frame_right_row = frame_left_row + rows
+        frame_right_col = frame_left_col + cols
+        
+        
 
     def _main(self, stdscr):
         # Получаем размеры терминала
@@ -89,7 +97,7 @@ class TEditor(BaseModel):
         
             while True:
                 key = self.screen.getch()
-                print(f"{key=}")
+                #print(f"{key=}")
                 if key == curses.KEY_UP:
                     self.row -= 1
                 elif key == curses.KEY_DOWN:
