@@ -90,6 +90,23 @@ class TEditor(BaseModel):
         if self.row < 0:
             self.row = 0
 
+
+    def load_from_file(self, filename: str=""):
+        if not filename:
+            return -1
+        self.buffer.load_from_file(filename)
+    
+
+    def add_from_buffer(self):
+        """
+            добавление в видимую часть экрана видимую часть текста ограниченный фреймом   frame_left_row,  frame_left_col и frame_right_row, frame_right_col
+        """
+        y = 0
+        for row in range(self.frame_left_row, self.frame_right_row):
+            self.screen.addstr(y, 0,  "Hellooooooooo")  #self.buffer[row])
+            y += 1
+            
+
     def run(self):
         try:
             self.init_colors()
@@ -97,7 +114,7 @@ class TEditor(BaseModel):
         
             while True:
                 key = self.screen.getch()
-                #print(f"{key=}")
+                # print(f"{key=}")
                 if key == curses.KEY_UP:
                     self.row -= 1
                 elif key == curses.KEY_DOWN:
@@ -116,6 +133,10 @@ class TEditor(BaseModel):
                     self.col = 0        
                 elif key == 17: # Ctrl+Q
                     break
+                elif key == 15: # Ctrl+O - открытие файла
+                    # print("Open file")
+                    self.load_from_file(filename="txt/1.txt")
+                    self.add_from_buffer()
                 else:
                     self.screen.addch(self.row, self.col, chr(key))
                     self.col += 1
