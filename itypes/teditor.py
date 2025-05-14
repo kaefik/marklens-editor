@@ -78,8 +78,11 @@ class TEditor(BaseModel):
         self.color.text = text
 
     def check_cursor(self):
-        if self.col >= self.cols:
-            self.col = self.cols - 1
+        """
+            Даже если окно задано как rows=30, cols=50, реальные доступные координаты для записи — (0..29, 0..48)
+        """
+        if self.col >= self.cols - 1:
+            self.col = self.cols - 2
             
         if self.col < 0:
             self.col = 0
@@ -103,7 +106,7 @@ class TEditor(BaseModel):
         """
         y = 0
         for row in range(self.frame_left_row, self.frame_right_row-1):
-            text = self.buffer[row]  #"Hellooooooooo"
+            text = self.buffer[row]  #"Hellooooooooo
             len_text = len(text)
             if len_text < self.cols:
                 text = text + " "*(self.cols-len_text-1)
@@ -149,8 +152,12 @@ class TEditor(BaseModel):
                     self.load_from_file(filename="txt/1.txt")
                     self.add_from_buffer()
                 else:
+                    #print(f"{self.col=}  - {self.row}")
+                    #time.sleep(5) 
                     self.screen.addch(self.row, self.col, chr(key))
                     self.col += 1
+                    #print(f"{self.col=}")
+                    #time.sleep(5)
 
                 self.check_cursor()
                 self.screen.move(self.row, self.col)
