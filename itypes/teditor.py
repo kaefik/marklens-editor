@@ -112,9 +112,6 @@ class TEditor(BaseModel):
                 text = text + " "*(self.cols-len_text-1)
             else:                
                 text = text[:self.cols]
-            #print(f"{y} - {text=}")
-
-            time.sleep(0.3)
             
             self.screen.addstr(y, 0,  text)  #self.buffer[row]
             self.screen.refresh()
