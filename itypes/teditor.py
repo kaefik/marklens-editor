@@ -5,7 +5,7 @@ from .tbuffer import TBuffer
 import curses
 from curses import wrapper
 import os
-
+import time
 
 class TEditor(BaseModel):
     cols: int = Field(..., ge=0)
@@ -102,8 +102,19 @@ class TEditor(BaseModel):
             добавление в видимую часть экрана видимую часть текста ограниченный фреймом   frame_left_row,  frame_left_col и frame_right_row, frame_right_col
         """
         y = 0
-        for row in range(self.frame_left_row, self.frame_right_row):
-            self.screen.addstr(y, 0,  "Hellooooooooo")  #self.buffer[row])
+        for row in range(self.frame_left_row, self.frame_right_row-1):
+            text = self.buffer[row]  #"Hellooooooooo"
+            len_text = len(text)
+            if len_text < self.cols:
+                text = text + " "*(self.cols-len_text-1)
+            else:                
+                text = text[:self.cols]
+            #print(f"{y} - {text=}")
+
+            time.sleep(0.3)
+            
+            self.screen.addstr(y, 0,  text)  #self.buffer[row]
+            self.screen.refresh()
             y += 1
             
 
